@@ -1,1 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel de Monitoramento Veicular</title>
+    <style>
+        html, body, #map { height: 100%; margin: 0; padding: 0; }
+        #info { position: absolute; top: 10px; left: 10px; z-index: 1000; background: white; padding: 10px; font-family: Arial; border-radius: 5px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); color: #333; }
+    </style>
+    <!-- Biblioteca gratuita Leaflet (Sem necessidade de chave de API ou cartão) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+    <div id="info">Carregando última posição do veículo...</div>
+    <div id="map"></div>
 
+    <script>
+        let map;
+        let marker;
+        const urlAPI = "https://script.google.com/macros/s/AKfycbwJzup13U--uvFjZmA2Xf9kJWa3HE9x0aDV7gdV6cxa2IWq-W7BeslwlQJ2iHCgIb-eIw/exec";
+
+        function initMap() {
+            // Inicializa o mapa centrado em São Paulo inicialmente
+            map = L.map('map').setView([-23.550520, -46.633308], 15);
+
+            // Adiciona o design gratuito do OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+            
+            atualizarLocalizacao();
+            setInterval(atualizarLocalizacao, 10000);
+        }
+
+        function atualizarLocalizacao() {
+            fetch(urlAPI)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.lat && data.lng) {
+                        const lat = parseFloat(data.lat);
+                        const lng = parseFloat(data.lng);
+                        const pos = [lat, lng];
+                        
+                        document.getElementById("info").innerHTML = `<b>Última atualização:</b> ${data.timestamp || 'Agora'}<br><b>Lat/Lng:</b> ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+
+                        if (!marker) {
+                            marker = L.marker(pos).addTo(map).bindPopup("Veículo").openPopup();
+                        } else {
+                            marker.setLatLng(pos);
+                        }
+                        map.setView(pos, map.getZoom());
+                    }
+                })
+                .catch(err => console.error("Erro ao buscar dados:", err));
+        }
+
+        window.onload = initMap;
+    </script>
+</body>
+</html>
