@@ -5,9 +5,8 @@
     <title>Painel de Monitoramento Veicular</title>
     <style>
         html, body, #map { height: 100%; margin: 0; padding: 0; }
-        #info { position: absolute; top: 10px; left: 10px; z-index: 1000; background: white; padding: 10px; font-family: Arial; border-radius: 5px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); color: #333; }
+        #info { position: absolute; top: 10px; left: 10px; z-index: 1000; background: white; padding: 12px; font-family: Arial, sans-serif; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); color: #333; font-size: 14px; }
     </style>
-    <!-- Biblioteca gratuita Leaflet (Sem necessidade de chave de API ou cartão) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
@@ -18,20 +17,31 @@
     <script>
         let map;
         let marker;
+        // URL da sua API do Google Apps Script atualizada
         const urlAPI = "https://script.google.com/macros/s/AKfycbz21imKqw2LcP3lIzAF0d618vOMQUBqiss4_swISyPzfp0CjcI0Asu7Y7wWRpOImStUqw/exec";
 
         function initMap() {
-            // Inicializa o mapa centrado em São Paulo inicialmente
-            map = L.map('map').setView([-23.550520, -46.633308], 15);
+            // Inicializa o mapa centralizado em Salvador/BA (ajustado para a sua coordenada base)
+            map = L.map('map').setView([-12.9632, -38.4085], 15);
 
-            // Adiciona o design gratuito do OpenStreetMap
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
                 attribution: '© OpenStreetMap'
             }).addTo(map);
             
             atualizarLocalizacao();
-            setInterval(atualizarLocalizacao, 10000);
+            setInterval(atualizarLocalizacao, 15000); // Consulta a cada 15 segundos
+        }
+
+        function formatarDataLocal(dataString) {
+            if (!dataString) return 'Agora';
+            // Se já vier formatado em barra (dd/MM/yyyy), exibe direto
+            if (dataString.includes('/')) return dataString;
+            
+            // Converte o formato UTC/ISO para o horário local do Brasil (GMT-3)
+            const data = new Date(dataString);
+            return data.toLocaleTimeString('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit', second: '2-digit' }) + 
+                   ' (' + data.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' }) + ')';
         }
 
         function atualizarLocalizacao() {
@@ -43,10 +53,14 @@
                         const lng = parseFloat(data.lng);
                         const pos = [lat, lng];
                         
-                        document.getElementById("info").innerHTML = `<b>Última atualização:</b> ${data.timestamp || 'Agora'}<br><b>Lat/Lng:</b> ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                        const horaFormatada = formatarDataLocal(data.timestamp);
+
+                        document.getElementById("info").innerHTML = 
+                            `<b>Última atualização:</b> ${horaFormatada}<br>` +
+                            `<b>Lat/Lng:</b> ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
 
                         if (!marker) {
-                            marker = L.marker(pos).addTo(map).bindPopup("Veículo").openPopup();
+                            marker = L.marker(pos).addTo(map).bindPopup("Veículo em Movimento").openPopup();
                         } else {
                             marker.setLatLng(pos);
                         }
