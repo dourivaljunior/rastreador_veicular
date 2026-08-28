@@ -60,7 +60,7 @@
                             `<b>Lat/Lng:</b> ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
 
                         if (!marker) {
-                            marker = L.marker(pos).addTo(map).bindPopup("Veículo em Movimento").openPopup();
+                            marker = L.marker(pos).addTo(map).bindPopup("Localização do Veículo").openPopup();
                         } else {
                             marker.setLatLng(pos);
                         }
