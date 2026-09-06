@@ -51,7 +51,7 @@
                 capturarEEnviar();
                 
                 // Configura o envio a cada 15 segundos (5000 ms)
-                intervaloID = setInterval(capturarEEnviar, 15000);
+                intervaloID = setInterval(capturarEEnviar, 5000);
             }).catch(err => {
                 document.getElementById("status").innerText = "Erro ao iniciar!";
                 console.error(err);
