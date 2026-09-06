@@ -34,7 +34,7 @@
             camadaPontos.addTo(map);
             
             atualizarPainel();
-            setInterval(atualizarPainel, 15000); // Atualiza a cada 15 segundos
+            setInterval(atualizarPainel, 5000); // Atualiza a cada 15 segundos 15000
         }
 
         function formatarDataLocal(dataString) {
@@ -96,7 +96,7 @@
                         });
 
                         if (!markerCarro) {
-                            markerCarro = L.marker(posAtual, { icon: iconeCarro }).addTo(map).bindPopup("Posição Atual do Veículo").openPopup();
+                            markerCarro = L.marker(posAtual, { icon: iconeCarro }).addTo(map).bindPopup("Veículo").openPopup();
                         } else {
                             markerCarro.setLatLng(posAtual);
                         }
