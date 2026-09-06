@@ -50,7 +50,7 @@
                 // Envia imediatamente a primeira posição
                 capturarEEnviar();
                 
-                // Configura o envio a cada 15 segundos (15000 ms)
+                // Configura o envio a cada 15 segundos (5000 ms)
                 intervaloID = setInterval(capturarEEnviar, 15000);
             }).catch(err => {
                 document.getElementById("status").innerText = "Erro ao iniciar!";
